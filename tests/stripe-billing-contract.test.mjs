@@ -56,3 +56,23 @@ test("webhook delegates signature verification to the rotation-safe helper", asy
   assert.match(source, /import \{ verifyStripeSignature \} from "\.\.\/\.\.\/_shared\/stripe-security\.mjs"/);
   assert.doesNotMatch(source, /async function verifyStripeSignature/);
 });
+
+test("webhook reserves and completes events in the canonical ledger", async () => {
+  const source = await readFile(
+    new URL("../functions/api/stripe/webhook.ts", import.meta.url),
+    "utf8",
+  );
+
+  assert.match(source, /store\.insert\("compass_stripe_events"/);
+  assert.match(source, /supa\.update\("compass_stripe_events"/);
+});
+
+test("Supabase minimal inserts tolerate the empty successful response", async () => {
+  const source = await readFile(
+    new URL("../functions/_shared/supabase-admin.ts", import.meta.url),
+    "utf8",
+  );
+
+  assert.match(source, /const text = await r\.text\(\);/);
+  assert.match(source, /text\.trim\(\) \? JSON\.parse\(text\) as unknown\[\] : \[\]/);
+});
