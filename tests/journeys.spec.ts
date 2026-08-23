@@ -139,7 +139,10 @@ test.describe("Multi-viewport (sprint 8)", () => {
       // The shared Pages project may redirect an unauthenticated root to the
       // sign-in surface. Either that form or the marketing CTA is healthy;
       // the error boundary above is not.
-      const cta = page.locator("a", { hasText: /Start free trial|Sign in/ }).first();
+      // Keep this aligned with the deployed marketing shell: the current
+      // family header uses “Start free” and “Log in”, while authenticated
+      // surfaces and older shells use the longer variants.
+      const cta = page.locator("a:visible", { hasText: /Start free(?: trial)?|Start your free trial|Log in|Sign in/ }).first();
       const signInForm = page.locator("input[type='email']").first();
       await expect(cta.or(signInForm)).toBeVisible({ timeout: 5000 });
     });
