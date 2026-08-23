@@ -20,7 +20,10 @@ export function supaFetch(env: SupabaseAdminEnv) {
         body: JSON.stringify(row),
       });
       if (!r.ok) throw new Error(`Supabase insert ${table} ${r.status}: ${await r.text()}`);
-      return r.json();
+      // `Prefer: return=minimal` is deliberately used for idempotency claims;
+      // PostgREST answers that successful insert with an empty body.
+      const text = await r.text();
+      return text.trim() ? JSON.parse(text) as unknown[] : [];
     },
     async update(table: string, query: string, row: Record<string, unknown>): Promise<unknown[]> {
       const r = await fetch(`${base}/rest/v1/${table}?${query}`, {
